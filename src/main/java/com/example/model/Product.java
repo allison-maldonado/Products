@@ -7,21 +7,24 @@ import jakarta.persistence.Id;
 
 @Entity 
 public class Product {
+
+    @Id 
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String name;
+    private Double price;
+    private int stock;
+
     
-    public Product(Long id, String name, Long price, int stock) {
+   
+    public Product() {
+    }
+    public Product(Long id, String name, Double price, int stock) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.stock = stock;
     }
-    public Product() {
-    }
-    @Id 
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-    private Long price;
-    private int stock;
     public Long getId() {
         return id;
     }
@@ -34,10 +37,10 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
     public int getStock() {
@@ -46,5 +49,6 @@ public class Product {
     public void setStock(int stock) {
         this.stock = stock;
     }
+    
 
 }

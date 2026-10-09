@@ -3,9 +3,12 @@ package com.example.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dto.ProductRequest;
+import com.example.dto.ProductResponse;
 import com.example.model.Product;
 import com.example.service.ProductService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,41 +36,56 @@ public class ProductController {
 
 
     @GetMapping
-    public ResponseEntity<List<Product>> fidnAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<ProductResponse>> fidnAll() {
+        List<ProductResponse> list = new ArrayList<>();
+        for (Product elem : service.findAll()) {
+            list.add(toResponse(elem));
+        }
+        return ResponseEntity.ok(list);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
         Optional<Product> product = service.findById(id);
         if(product.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(product.get());
+
+        return ResponseEntity.ok(toResponse(product.get()));
     }
     @PostMapping
-    public ResponseEntity<Product> save(@RequestBody Product product) {
+    public ResponseEntity<ProductResponse> save(@RequestBody Product product) {
         Product newProduct = service.save(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(newProduct));
     }
     @PutMapping("/{id}")
-    public  ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product productUpdate) {
-        Optional<Product> product= service.update(id, productUpdate);
+    public  ResponseEntity<ProductResponse> update(@PathVariable Long id, @RequestBody ProductRequest productUpdate) {
+        Optional<Product> product= service.update(id, toEntity(productUpdate));
         if(product.isPresent()){
-            return ResponseEntity.ok(product.get());
+            return ResponseEntity.ok(toResponse(product.get()));
         }
         
         return ResponseEntity.notFound().build();
     }
     @DeleteMapping ("/{id}")
-    public ResponseEntity<Product> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id){
         boolean deleted = service.delete(id);
         if(!deleted){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
-    
+
+    private ProductResponse toResponse(Product product){
+        return new ProductResponse(product.getId(),product.getName(),product.getPrice(),product.getStock());
+    }
+    private Product toEntity(ProductRequest product){
+        Product productEntity = new Product();
+        productEntity.setName(product.name());
+        productEntity.setPrice(product.Price());
+        productEntity.setStock(product.stock());
+        return productEntity;
+    }
 }
 
 
