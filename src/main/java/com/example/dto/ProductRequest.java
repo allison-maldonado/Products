@@ -1,9 +1,18 @@
 package com.example.dto;
 
-public record ProductRequest(
-    String name,
-    Double Price,
-    int stock
-) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
+public record ProductRequest(
+    @NotBlank 
+    String name,
+    @Positive 
+    @NotNull 
+    Double Price,
+    @PositiveOrZero 
+    @NotNull 
+    Integer stock
+) {
 }

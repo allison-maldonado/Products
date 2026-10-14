@@ -8,6 +8,8 @@ import com.example.dto.ProductResponse;
 import com.example.model.Product;
 import com.example.service.ProductService;
 
+import jakarta.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,12 +56,13 @@ public class ProductController {
         return ResponseEntity.ok(toResponse(product.get()));
     }
     @PostMapping
-    public ResponseEntity<ProductResponse> save(@RequestBody Product product) {
+    public ResponseEntity<ProductResponse> save(@Valid @RequestBody Product product) {
         Product newProduct = service.save(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(newProduct));
     }
+    //Primero validamos el POST todos los datos 
     @PutMapping("/{id}")
-    public  ResponseEntity<ProductResponse> update(@PathVariable Long id, @RequestBody ProductRequest productUpdate) {
+    public  ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid  @RequestBody ProductRequest productUpdate) {
         Optional<Product> product= service.update(id, toEntity(productUpdate));
         if(product.isPresent()){
             return ResponseEntity.ok(toResponse(product.get()));
