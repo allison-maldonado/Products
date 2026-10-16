@@ -2,10 +2,11 @@ package com.example.service;
 
 import java.util.List;
 import java.util.Optional;
-
+import com.example.model.Category;
 import org.springframework.stereotype.Service;
 
 import com.example.model.Product;
+import com.example.repository.CategoryRepository;
 import com.example.repository.ProductRepository;
 
 @Service 
@@ -13,8 +14,11 @@ public class ProductService {
 
     private final ProductRepository repo;
 
-    public ProductService(ProductRepository repo){
-        this.repo=repo;
+    private final CategoryRepository repoCategory;
+
+    public ProductService(ProductRepository repo, CategoryRepository repoCategory){
+        this.repo = repo;
+        this.repoCategory=repoCategory;
     }
     public List<Product> findAll(){
         return repo.findAll();
@@ -22,7 +26,9 @@ public class ProductService {
     public Optional<Product> findById(Long id){
         return repo.findById(id);
     }
-    public Product save(Product product){
+    public Product save(Product product, Long categoryId){
+        Category category = repoCategory.findById(categoryId).orElseThrow();
+        product.setCategory(category);
         return repo.save(product);
     }
     public Optional<Product> update(Long id, Product newProduct){
@@ -35,7 +41,7 @@ public class ProductService {
         productBd.setPrice(newProduct.getPrice());
         productBd.setStock(newProduct.getStock());
 
-        return Optional.of(save(productBd));
+        return Optional.of(repo.save(productBd));
     }
     public boolean delete(Long id){
         if(!repo.existsById(id)){

@@ -55,11 +55,11 @@ public class ProductController {
 
         return ResponseEntity.ok(toResponse(product.get()));
     }
-    @PostMapping
-    public ResponseEntity<ProductResponse> save(@Valid @RequestBody Product product) {
-        Product newProduct = service.save(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(newProduct));
-    }
+  @PostMapping
+public ResponseEntity<ProductResponse> save(@Valid @RequestBody ProductRequest productRequest) {
+    Product productSaved = service.save(toEntity(productRequest), productRequest.categoryId());
+    return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(productSaved));
+}
     //Primero validamos el POST todos los datos 
     @PutMapping("/{id}")
     public  ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid  @RequestBody ProductRequest productUpdate) {
@@ -79,13 +79,28 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    private ProductResponse toResponse(Product product){
-        return new ProductResponse(product.getId(),product.getName(),product.getPrice(),product.getStock());
+   private ProductResponse toResponse(Product product) {
+    String categoryName = "";
+    Long categoryId = 0L;
+
+    if (product.getCategory() != null) {
+        categoryName = product.getCategory().getName();
+        categoryId = product.getCategory().getId();
     }
+
+    return new ProductResponse(
+        product.getId(),
+        product.getName(),
+        product.getPrice(),
+        product.getStock(),
+        categoryName,
+        categoryId
+    );
+}
     private Product toEntity(ProductRequest product){
         Product productEntity = new Product();
         productEntity.setName(product.name());
-        productEntity.setPrice(product.Price());
+        productEntity.setPrice(product.price());
         productEntity.setStock(product.stock());
         return productEntity;
     }

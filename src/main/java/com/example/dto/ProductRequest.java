@@ -10,9 +10,11 @@ public record ProductRequest(
     String name,
     @Positive 
     @NotNull 
-    Double Price,
+    Double price,
     @PositiveOrZero 
     @NotNull 
-    Integer stock
+    Integer stock,
+    @NotNull 
+    Long categoryId
 ) {
 }
